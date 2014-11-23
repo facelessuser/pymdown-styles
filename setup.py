@@ -12,6 +12,9 @@ setup(
     url="https://github.com/facelessuser/pymdown-lexers",
     packages=find_packages(exclude=["file_strip"]),
     entry_points=entry_points,
+    install_requires=[
+        'Pygments>=2.0.1'
+    ],
     zip_safe=True,
     license='MIT License',
     classifiers=[
