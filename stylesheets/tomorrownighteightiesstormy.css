@@ -1,16 +1,16 @@
 .highlight .hll { background-color: #5A5D5F }
 .highlight  { background-color: #232628; color: #cccccc }
-.highlight .c { color: #888888 } /* Comment */
+.highlight .c { color: #888888; font-style: italic } /* Comment */
 .highlight .err { color: #F2777A } /* Error */
 .highlight .k { color: #CC99CC; font-weight: bold } /* Keyword */
 .highlight .l { color: #F99157 } /* Literal */
 .highlight .n { color: #cccccc } /* Name */
 .highlight .o { color: #66CCCC } /* Operator */
 .highlight .p { color: #cccccc } /* Punctuation */
-.highlight .cm { color: #888888 } /* Comment.Multiline */
+.highlight .cm { color: #888888; font-style: italic } /* Comment.Multiline */
 .highlight .cp { color: #888888; font-weight: bold } /* Comment.Preproc */
-.highlight .c1 { color: #888888 } /* Comment.Single */
-.highlight .cs { color: #888888 } /* Comment.Special */
+.highlight .c1 { color: #888888; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #888888; font-style: italic } /* Comment.Special */
 .highlight .gd { color: #F2777A } /* Generic.Deleted */
 .highlight .ge { font-style: italic } /* Generic.Emph */
 .highlight .gh { color: #cccccc; font-weight: bold } /* Generic.Heading */
@@ -29,7 +29,7 @@
 .highlight .s { color: #99CC99 } /* Literal.String */
 .highlight .na { color: #6699CC } /* Name.Attribute */
 .highlight .nb { color: #6699CC } /* Name.Builtin */
-.highlight .nc { color: #FFCC66; font-weight: bold } /* Name.Class */
+.highlight .nc { color: #F2777A; font-weight: bold } /* Name.Class */
 .highlight .no { color: #F2777A } /* Name.Constant */
 .highlight .nd { color: #66CCCC } /* Name.Decorator */
 .highlight .ni { color: #cccccc } /* Name.Entity */
@@ -39,7 +39,7 @@
 .highlight .nn { color: #cccccc } /* Name.Namespace */
 .highlight .nx { color: #6699CC } /* Name.Other */
 .highlight .py { color: #cccccc } /* Name.Property */
-.highlight .nt { color: #66CCCC } /* Name.Tag */
+.highlight .nt { color: #F2777A } /* Name.Tag */
 .highlight .nv { color: #F2777A } /* Name.Variable */
 .highlight .ow { color: #66CCCC } /* Operator.Word */
 .highlight .w { color: #cccccc } /* Text.Whitespace */

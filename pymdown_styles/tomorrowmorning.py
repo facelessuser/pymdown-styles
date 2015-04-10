@@ -11,9 +11,9 @@ class TomorrowmorningStyle(Style):
     highlight_color = "#ffffe6"   # Highlight Line
 
     styles = {
-        Comment:                     "#8e908c",
+        Comment:                     "italic #8e908c",
         Comment.Multiline:           "#8e908c",
-        Comment.Preproc:             "bold #8e908c",
+        Comment.Preproc:             "bold #8e908c noitalic",
         Comment.Single:              "#8e908c",
         Comment.Special:             "#8e908c",
         Error:                       "#c82829",
@@ -56,7 +56,7 @@ class TomorrowmorningStyle(Style):
         Name.Attribute:              "#4271ae",
         Name.Builtin:                "#4271ae",
         Name.Builtin.Pseudo:         "#f5871f",
-        Name.Class:                  "bold #eab700",
+        Name.Class:                  "bold #c82829",
         Name.Constant:               "#c82829",
         Name.Decorator:              "#3e999f",
         Name.Entity:                 "#4d4d4c",
@@ -66,7 +66,7 @@ class TomorrowmorningStyle(Style):
         Name.Namespace:              "#4d4d4c",
         Name.Other:                  "#4271ae",
         Name.Property:               "#4d4d4c",
-        Name.Tag:                    "#3e999f",
+        Name.Tag:                    "#c82829",
         Name.Variable:               "#c82829",
         Name.Variable.Class:         "#c82829",
         Name.Variable.Global:        "#c82829",

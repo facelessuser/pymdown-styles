@@ -11,9 +11,9 @@ class TomorrownighteightiesstormyStyle(Style):
     highlight_color = "#5a5d5f"   # Highlight Line
 
     styles = {
-        Comment:                     "#888888",
+        Comment:                     "italic #888888",
         Comment.Multiline:           "#888888",
-        Comment.Preproc:             "bold #888888",
+        Comment.Preproc:             "bold #888888 noitalic",
         Comment.Single:              "#888888",
         Comment.Special:             "#888888",
         Error:                       "#f2777a",
@@ -56,7 +56,7 @@ class TomorrownighteightiesstormyStyle(Style):
         Name.Attribute:              "#6699cc",
         Name.Builtin:                "#6699cc",
         Name.Builtin.Pseudo:         "#f99157",
-        Name.Class:                  "bold #ffcc66",
+        Name.Class:                  "bold #f2777a",
         Name.Constant:               "#f2777a",
         Name.Decorator:              "#66cccc",
         Name.Entity:                 "#cccccc",
@@ -66,7 +66,7 @@ class TomorrownighteightiesstormyStyle(Style):
         Name.Namespace:              "#cccccc",
         Name.Other:                  "#6699cc",
         Name.Property:               "#cccccc",
-        Name.Tag:                    "#66cccc",
+        Name.Tag:                    "#f2777a",
         Name.Variable:               "#f2777a",
         Name.Variable.Class:         "#f2777a",
         Name.Variable.Global:        "#f2777a",
