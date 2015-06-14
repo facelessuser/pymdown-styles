@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+"""Setup pymdown-styles."""
 from setuptools import setup, find_packages
 from entry_points import entry_points
 
@@ -10,7 +10,7 @@ setup(
     author='Isaac Muse',
     author_email='Isaac.Muse [at] gmail.com',
     url="https://github.com/facelessuser/pymdown-lexers",
-    packages=find_packages(exclude=["file_strip"]),
+    packages=find_packages(exclude=["tools"]),
     entry_points=entry_points,
     install_requires=[
         # 'Pygments>=2.0.1'

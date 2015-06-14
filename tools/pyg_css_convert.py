@@ -1,32 +1,30 @@
 """
-pyg_css_convert
-
-Quick and dirty reverse generation of Pygments style module
-from the CSS.
+Quick and dirty reverse generation of Pygments style module from the CSS.
 
 Licensed under MIT
-Copyright (c) 2014 Isaac Muse <isaacmuse@gmail.com>
+Copyright (c) 2014 - 2015 Isaac Muse <isaacmuse@gmail.com>
 """
 import sys
 from webcolors import name_to_hex, normalize_hex
 from os.path import dirname, abspath, join
 import re
-from file_strip.comments import Comments
 import traceback
+from pygments.token import STANDARD_TYPES as ST
 
 __version__ = '1.0.0'
 
-HEADER = '''"""
-Reverse generated from CSS back to PY via pyg_css_convert.py
-"""
+HEADER = '''"""Reverse generated from CSS back to PY via pyg_css_convert.py."""
 from pygments.style import Style
-from pygments.token import Keyword, Name, Comment, String, Error, Text, \\
-     Number, Operator, Generic, Whitespace, Punctuation, Other, Literal
+from pygments.token import Keyword, Name, Comment, String, Error, Text, Number  # noqa
+from pygments.token import Operator, Generic, Whitespace, Punctuation, Other, Literal  # noqa
 
 
 '''
 
 CLASS_START = '''class %sStyle(Style):
+
+    """Pygments style %sStyle."""
+
     background_color = "%s"  %s
     highlight_color = "%s"   %s
 
@@ -35,38 +33,88 @@ CLASS_START = '''class %sStyle(Style):
     }
 '''
 
-from pygments.token import STANDARD_TYPES as st
-
 tokens = {"hll": "highlight_color"}
-
-for k, v in st.items():
+for k, v in ST.items():
     if v == "":
         continue
     tokens[v] = str(k).replace("Token.", '')
 
-# Convert
-RE_STYLES = r'''
-    (?:
-        (?P<text>^\s*%(prefix)s\s*\{(?P<t_rule>[^}]+?)\}\s*$)|
-        (?P<rule>^\s*%(prefix)s\s*\.(?P<class>\w+)\s*\{(?P<c_rule>[^}]+?)\}\s*$)|
-        (?P<other>^\s*[^{]+\{[^}]+?\})|
-        (?P<invalid>.)
+
+class Comments(object):
+
+    """Comment strip class."""
+
+    re_line_preserve = re.compile(r"\r?\n", re.MULTILINE)
+    re_css_comment = re.compile(
+        r'''(?x)
+            (?P<comments>
+                /\*[^*]*\*+(?:[^/*][^*]*\*+)*/  # multi-line comments
+              | \s*//(?:[^\r\n])*               # single line comments
+            )
+          | (?P<code>
+                "(?:\\.|[^"\\])*"               # double quotes
+              | '(?:\\.|[^'\\])*'               # single quotes
+              | .[^/"']*                        # everything else
+            )
+        ''',
+        re.DOTALL
     )
-'''
+
+    def __init__(self, preserve_lines=False):
+        """Initialize."""
+
+        self.preserve_lines = preserve_lines
+
+    def remove_comments(self, group):
+        """Remove comments."""
+
+        return ''.join([x[0] for x in self.re_line_preserve.findall(group)]) if self.preserve_lines else ''
+
+    def evaluate(self, m):
+        """Search for comments."""
+
+        g = m.groupdict()
+        return g["code"] if g["code"] is not None else self.remove_comments(g["comments"])
+
+    def _strip_regex(self, text):
+        """Generic function that strips out comments pased on the given pattern."""
+
+        return ''.join(map(lambda m: self.evaluate(m), self.re_css_comment.finditer(text)))
+
+    def strip(self, text):
+        """Strip comments."""
+
+        return self._strip_regex(text)
 
 
 class PygmentsCss2Py(object):
+
+    """Pygments CSS to Pygments Python source converter."""
+
+    re_styles = r'''
+        (?:
+            (?P<text>^\s*%(prefix)s\s*\{(?P<t_rule>[^}]+?)\}\s*$)|
+            (?P<rule>^\s*%(prefix)s\s*\.(?P<class>\w+)\s*\{(?P<c_rule>[^}]+?)\}\s*$)|
+            (?P<other>^\s*[^{]+\{[^}]+?\})|
+            (?P<invalid>.)
+        )
+    '''
+
     def __init__(self, css, module, prefix='.highlight', output='.'):
+        """Initialize."""
+
         self.css = css
         self.module = module[:1].upper() + module[1:].lower()
         self.prefix = prefix
         self.output = output
         self.css_style = re.compile(
-            RE_STYLES % {"prefix": prefix},
+            self.re_styles % {"prefix": prefix},
             re.MULTILINE | re.DOTALL | re.VERBOSE
         )
 
     def get_settings(self, rule):
+        """Get the settings."""
+
         obj = {
             "bold": False,
             "italic": False,
@@ -97,6 +145,8 @@ class PygmentsCss2Py(object):
         return obj
 
     def process(self, m):
+        """Process the match."""
+
         if m.group('text'):
             obj = self.get_settings(m.group('t_rule'))
             obj["class"] = "text"
@@ -112,6 +162,8 @@ class PygmentsCss2Py(object):
             return {"class": "invalid"}
 
     def strip_exclusions(self, rules):
+        """Strip out exclusions."""
+
         count = 0
         total = len(rules)
         for i in range(0, total):
@@ -139,6 +191,8 @@ class PygmentsCss2Py(object):
             count += 1
 
     def format_rules(self, rules, undetected, invalid, max_length):
+        """Format the rules for output."""
+
         self.strip_exclusions(rules)
         text = ""
         last = len(rules) - 1
@@ -170,9 +224,11 @@ class PygmentsCss2Py(object):
         return text
 
     def convert(self):
+        """Convert the CSS."""
+
         with open(self.css, "r") as r:
             text = []
-            source = Comments('css', False).strip(r.read())
+            source = Comments().strip(r.read())
             m = re.search(r"(^\s*|\}\n*\s*)\s*%s\s*\{(?P<b_rule>[^}]+?)\}\s*" % self.prefix, source)
             bg = "#ffffff"
             hl = "#ffffcc"
@@ -241,46 +297,49 @@ class PygmentsCss2Py(object):
                 w.write(
                     HEADER + (
                         CLASS_START % (
-                            self.module, bg, bg_comment, hl, hl_comment,
+                            self.module, self.module, bg, bg_comment, hl, hl_comment,
                             self.format_rules(text, undetected, invalid, max_length)
                         )
                     )
                 )
 
 
-if __name__ == "__main__":
+def main():
+    """Main CLI function."""
+
     import argparse
 
-    def main():
-        parser = argparse.ArgumentParser(prog='pyg_css_convert', description='Convert pygments css to python modules.')
-        # Flag arguments
-        parser.add_argument('--version', action='version', version="%(prog)s " + __version__)
-        parser.add_argument('--debug', '-d', action='store_true', default=False, help=argparse.SUPPRESS)
-        parser.add_argument('--prefix', '-p', default='.highlight', help="Prefix before pygments CSS selectors.")
-        parser.add_argument('--output-dir', '-o', default=None, help='Output folder for Python module.')
-        parser.add_argument('module_name', help='Name of Pygments module.')
-        parser.add_argument('css', help='CSS input file.')
+    parser = argparse.ArgumentParser(prog='pyg_css_convert', description='Convert pygments css to python modules.')
+    # Flag arguments
+    parser.add_argument('--version', action='version', version="%(prog)s " + __version__)
+    parser.add_argument('--debug', '-d', action='store_true', default=False, help=argparse.SUPPRESS)
+    parser.add_argument('--prefix', '-p', default='.highlight', help="Prefix before pygments CSS selectors.")
+    parser.add_argument('--output-dir', '-o', default=None, help='Output folder for Python module.')
+    parser.add_argument('module_name', help='Name of Pygments module.')
+    parser.add_argument('css', help='CSS input file.')
 
-        args = parser.parse_args()
+    args = parser.parse_args()
 
-        if args.output_dir is not None:
-            output = args.output_dir
-        else:
-            output = dirname(abspath(args.css))
-        if output == '':
-            output = '.'
+    if args.output_dir is not None:
+        output = args.output_dir
+    else:
+        output = dirname(abspath(args.css))
+    if output == '':
+        output = '.'
 
-        try:
-            c2p = PygmentsCss2Py(
-                args.css, args.module_name,
-                prefix=args.prefix, output=output
-            )
+    try:
+        c2p = PygmentsCss2Py(
+            args.css, args.module_name,
+            prefix=args.prefix, output=output
+        )
 
-            c2p.convert()
-            status = True
-        except:
-            print(traceback.format_exc())
-            status = False
-        return status
+        c2p.convert()
+        status = True
+    except:
+        print(traceback.format_exc())
+        status = False
+    return status
 
+
+if __name__ == "__main__":
     sys.exit(main())

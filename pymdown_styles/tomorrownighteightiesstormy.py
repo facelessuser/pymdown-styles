@@ -1,12 +1,13 @@
-"""
-Reverse generated from CSS back to PY via pyg_css_convert.py
-"""
+"""Reverse generated from CSS back to PY via pyg_css_convert.py."""
 from pygments.style import Style
-from pygments.token import Keyword, Name, Comment, String, Error, Text, \
-     Number, Operator, Generic, Whitespace, Punctuation, Other, Literal
+from pygments.token import Keyword, Name, Comment, String, Error, Text, Number  # noqa
+from pygments.token import Operator, Generic, Whitespace, Punctuation, Other, Literal  # noqa
 
 
 class TomorrownighteightiesstormyStyle(Style):
+
+    """Pygments style TomorrownighteightiesstormyStyle."""
+
     background_color = "#232628"  # Background
     highlight_color = "#5a5d5f"   # Highlight Line
 
