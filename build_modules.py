@@ -20,9 +20,15 @@ for f in os.listdir(css):
         added.append(os.path.basename(name))
 
 with open(os.path.join(output, '__init__.py'), 'w') as f:
+    styles = []
     f.write('"""Import the style modules."""\n')
     for a in added:
-        f.write('from .%s import %sStyle  # noqa\n' % (a.lower(), a[:1].upper() + a[1:].lower()))
+        styles.append('    "%sStyle"' % (a[:1].upper() + a[1:].lower()))
+        f.write('from .%s import %sStyle\n' % (a.lower(), a[:1].upper() + a[1:].lower()))
+    if len(styles) == 1:
+        f.write('\n__all__ = (%s,)\n' % styles[0].strip())
+    else:
+        f.write('\n__all__ = (\n%s\n)\n' % ',\n'.join(styles))
 
 with open('entry_points.py', 'w') as f:
     f.write('"""Entry points for the style module."""\nentry_points = \'\'\'\n[pygments.styles]\n')
